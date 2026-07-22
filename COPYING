@@ -8,8 +8,8 @@ Components and their copyrights:
   (Licensed under GPLv2, see busybox/COPYING)
 
 - tsukine_top, tsukine_net, tsukine_net_ui:
-  Copyright (C) 2025 Tsukine OS authors (you)
-  (Licensed under GPLv2 / MIT - your choice)
+  Copyright (C) 2025 Tsukine OS authors 
+  LICENSES/Tsukine_Package/GPL-2.0
 
 - Logo and branding "Tsukine OS":
   Copyright (C) 2025 Tsukine OS authors

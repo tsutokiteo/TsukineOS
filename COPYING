@@ -1,3 +1,22 @@
+Tsukine OS - A minimal Linux-based operating system
+
+Components and their copyrights:
+- Linux kernel 6.6: Copyright (C) 1991-2025 Linus Torvalds and contributors
+  (Licensed under GPLv2, see kernel/COPYING)
+
+- BusyBox: Copyright (C) 1999-2025 Erik Andersen and contributors
+  (Licensed under GPLv2, see busybox/COPYING)
+
+- tsukine_top, tsukine_net, tsukine_net_ui:
+  Copyright (C) 2025 Tsukine OS authors (you)
+  (Licensed under GPLv2 / MIT - your choice)
+
+- Logo and branding "Tsukine OS":
+  Copyright (C) 2025 Tsukine OS authors
+  All rights reserved for branding elements.
+
+==================================================
+
 The Linux Kernel is provided under:
 
 	SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note

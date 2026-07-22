@@ -1,18 +1,17 @@
-Linux kernel
-============
+Tsukine OS
+================================
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+This is a personal Linux distribution for music creators, built on Linux 6.6.
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+Current version: indev-0.1.0
+Goal: A lightweight, controllable environment for UTAU / Vocaloid production.
 
-    https://www.kernel.org/doc/html/latest/
+System avatar: 津時 (Tsutoki) — a gray wolf with heterochromia.
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
+Own tools:
+  - tsukine_top      : task manager
+  - tsukine_net      : network config
+  - tsukine_net_ui   : network monitor
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+The following is the original Linux kernel README.
+====================================================

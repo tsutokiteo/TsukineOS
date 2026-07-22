@@ -1,0 +1,27 @@
+#!/bin/busybox sh
+
+# 挂载必要的虚拟文件系统
+/bin/busybox mount -t proc none /proc
+/bin/busybox mount -t sysfs none /sys
+
+# 清屏
+echo -e "\033c"
+
+# 打印 TsukineOS 专属硬核月牙字符画
+echo "       .#####"
+echo "     ##@@@@@@"
+echo "    #@@@@@@"
+echo "   #@@@@@@"
+echo "   #@@@@@@@"
+echo "    #@@@@@@@"
+echo "     ##@@@@@@@"
+echo "       .#######"
+echo ""
+echo "   Welcome to TsukineOS!"
+echo "   Version: TsukineOS Alpha 0.0.1"
+echo "   Kernel: 6.6.0-custom"
+echo "========================="
+echo ""
+
+# 启动交互式命令行
+exec /bin/busybox sh

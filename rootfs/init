@@ -18,10 +18,10 @@ echo "     ##@@@@@@@"
 echo "       .#######"
 echo ""
 echo "   Welcome to TsukineOS!"
-echo "   Version: TsukineOS Indev 0.1.1"
+echo "   Version: TsukineOS Indev"
 echo "   Kernel: 6.6.0-custom"
 echo "========================="
-echo ""
+echo "" 0.
 
 # 挂载 devtmpfs (如果还没挂载的话)
 mount -t devtmpfs devtmpfs /dev

@@ -24,3 +24,9 @@ Own tools:
 
 The following is the original Linux kernel README.
 ====================================================
+
+## Build Dependencies
+
+- **BusyBox 1.36.1**: Provides basic userspace tools (`ls`, `ps`, `mount`, etc.). Note that `/bin/sh` has been replaced by `dash`.
+
+- **dash**: Already included in `rootfs/bin/`, no additional download required. If you wish to compile it yourself, refer to: http://gondor.apana.org.au/~herbert/dash/

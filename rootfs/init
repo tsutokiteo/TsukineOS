@@ -18,10 +18,25 @@ echo "     ##@@@@@@@"
 echo "       .#######"
 echo ""
 echo "   Welcome to TsukineOS!"
-echo "   Version: TsukineOS Alpha 0.0.1"
+echo "   Version: TsukineOS Indev 0.1.1"
 echo "   Kernel: 6.6.0-custom"
 echo "========================="
 echo ""
 
+# 挂载 devtmpfs (如果还没挂载的话)
+mount -t devtmpfs devtmpfs /dev
+
+# 如果 /dev/null 不存在，就手动创建它！
+# c 1 3 代表字符设备，主设备号1，次设备号3，这是 null 设备的绝对标识
+if [ ! -e /dev/null ]; then
+    mknod /dev/null c 1 3
+    chmod 666 /dev/null
+fi
+
+# 现在可以安全地启动网络守护进程了
+/bin/tsukine_net &
+
+# 启动网络守护进程
+/bin/tsukine_net &
 # 启动交互式命令行
 exec /bin/busybox sh

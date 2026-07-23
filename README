@@ -4,16 +4,23 @@ Tsukine OS
 This is a personal Linux distribution built for music creators,
 based on the Linux 6.6 kernel.
 
-Current version: indev-0.1.1
+Current version: indev-0.1.2
 
 Own tools:
   - tsukine_top      : task manager (with -u for user, -c for kernel)
+    → taskmgr        : shortcut for tsukine_top
   - tsukine_net      : network config (dynamic detection, daemonized)
+    → net            : shortcut for tsukine_net
   - tsukine_net_ui   : network monitor
-
-Additional tools:
+    → netui          : shortcut for tsukine_net_ui
+  - tsukine_ping     : ICMP test (with -c count support)
+    → ping           : shortcut for tsukine_ping
+  - tsukine_iwr      : HTTP download tool
+    → iwr            : shortcut for tsukine_iwr
   - tsukine_reboot   : reboot the system
+    → reboot         : shortcut for tsukine_reboot
   - tsukine_shutdown : shut down the system
+    → shutdown       : shortcut for tsukine_shutdown
 
 The following is the original Linux kernel README.
 ====================================================

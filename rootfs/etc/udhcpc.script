@@ -1,0 +1,20 @@
+
+#!/bin/sh
+
+case "$1" in
+cat > /home/dministrator/kernel-dev/linux-6.6/rootfs/etc/udhcpc.script << 'EOF'
+#!/bin/sh
+
+case "$1" in
+    deconfig)
+        ip addr flush dev "$interface"
+        ip route flush dev "$interface"
+        ;;
+    renew|bound)
+        ip addr add "$ip/$mask" dev "$interface"
+        if [ -n "$router" ] ; then
+            ip route add default via "$router" dev "$interface"
+        fi
+        echo "nameserver $dns" > /etc/resolv.conf
+        ;;
+esac

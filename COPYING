@@ -7,7 +7,7 @@ Components and their copyrights:
 - BusyBox: Copyright (C) 1999-2025 Erik Andersen and contributors
   (Licensed under GPLv2, see busybox/COPYING)
 
-- tsukine_top, tsukine_net, tsukine_net_ui:
+- tsukine_top, tsukine_net, tsukine_net_ui,tsukine_shutdown,tsukine_reboot:
   Copyright (C) 2025 Tsukine OS authors 
   LICENSES/Tsukine_Package/GPL-2.0
 

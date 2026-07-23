@@ -1,4 +1,4 @@
-#!/bin/busybox sh
+#!/bin/sh
 
 # 挂载必要的虚拟文件系统
 /bin/busybox mount -t proc none /proc
@@ -7,7 +7,7 @@
 # 清屏
 echo -e "\033c"
 
-# 打印 TsukineOS 专属硬核月牙字符画
+# 打印 TsukineOS
 echo "       .#####"
 echo "     ##@@@@@@"
 echo "    #@@@@@@"
@@ -36,7 +36,5 @@ fi
 # 现在可以安全地启动网络守护进程了
 /bin/tsukine_net &
 
-# 启动网络守护进程
-/bin/tsukine_net &
 # 启动交互式命令行
 exec /bin/busybox sh

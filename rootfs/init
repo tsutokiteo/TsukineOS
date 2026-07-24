@@ -5,6 +5,12 @@
 /bin/busybox mount -t sysfs none /sys
 /bin/busybox mount -t devtmpfs none /dev
 
+# 设置默认主机名
+if [ ! -f /etc/hostname ]; then
+    echo "tsukine" > /etc/hostname
+fi
+/bin/busybox hostname -F /etc/hostname
+
 # 创建 /dev/null（如果不存在）
 if [ ! -e /dev/null ]; then
     /bin/busybox mknod /dev/null c 1 3

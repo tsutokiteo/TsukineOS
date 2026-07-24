@@ -1,0 +1,15 @@
+# /etc/profile
+HOSTNAME=$(cat /etc/hostname 2>/dev/null || hostname 2>/dev/null || echo "tsukine")
+
+case $(whoami) in
+    root)
+        PS1='root@'$HOSTNAME':#'
+        ;;
+    dmin)
+        PS1='dmin@'$HOSTNAME':$'
+        ;;
+    *)
+        PS1='user@'$HOSTNAME':$'
+        ;;
+esac
+export PS1

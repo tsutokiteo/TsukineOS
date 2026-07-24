@@ -28,5 +28,10 @@ fi
 /bin/busybox echo "========================="
 /bin/busybox echo ""
 
-# 直接启动 root shell（不经过 login）
+while true; do
+    /bin/login
+    sleep 1
+done
+
+# 直接启动 root shell
 exec /bin/busybox sh

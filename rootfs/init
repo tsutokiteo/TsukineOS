@@ -1,23 +1,59 @@
 #!/bin/sh
 
-# 挂载虚拟文件系统
+# ---------- 颜色定义 ----------
+RED='\033[31m'
+GREEN='\033[32m'
+NC='\033[0m'
+
+# ---------- 状态函数（带延时） ----------
+status_ok() {
+    echo -e "${GREEN}[  OK  ]${NC} $1"
+    /bin/busybox usleep 100000   # 0.1 秒延时
+}
+
+status_warn() {
+    echo -e "${RED}[WARNING]${NC} $1"
+    /bin/busybox usleep 100000
+}
+
+# ---------- 挂载文件系统 ----------
 /bin/busybox mount -t proc none /proc
+[ $? -eq 0 ] && status_ok "Mounting /proc" || status_warn "Mounting /proc"
+
 /bin/busybox mount -t sysfs none /sys
+[ $? -eq 0 ] && status_ok "Mounting /sys" || status_warn "Mounting /sys"
+
 /bin/busybox mount -t devtmpfs none /dev
+[ $? -eq 0 ] && status_ok "Mounting /dev" || status_warn "Mounting /dev"
 
-# 设置默认主机名
-if [ ! -f /etc/hostname ]; then
-    echo "tsukine" > /etc/hostname
-fi
-/bin/busybox hostname -F /etc/hostname
-
-# 创建 /dev/null（如果不存在）
+# ---------- /dev/null ----------
 if [ ! -e /dev/null ]; then
     /bin/busybox mknod /dev/null c 1 3
     /bin/busybox chmod 666 /dev/null
+    [ -e /dev/null ] && status_ok "Creating /dev/null" || status_warn "Creating /dev/null"
 fi
 
-# 打印 Logo
+# ---------- 主机名 ----------
+[ ! -f /etc/hostname ] && echo "tsukine" > /etc/hostname
+/bin/busybox hostname -F /etc/hostname
+[ $? -eq 0 ] && status_ok "Setting hostname" || status_warn "Setting hostname"
+
+# ---------- 内核检查 ----------
+[ -f /proc/modules ] && status_ok "Kernel module support" || status_warn "Kernel module support"
+[ -f /proc/meminfo ] && status_ok "Memory management" || status_warn "Memory management"
+[ -f /proc/version ] && status_ok "Kernel version info" || status_warn "Kernel version info"
+[ -d /proc/net ] && status_ok "Network protocol stack" || status_warn "Network protocol stack"
+
+# ---------- 工具检查 ----------
+for tool in tsukine_top tsukine_net tsukine_net_ui tsukine_ping tsukine_iwr tsukine_reboot tsukine_shutdown nano; do
+    if [ -f /bin/$tool ] || [ -f /usr/bin/$tool ]; then
+        status_ok "Tool: $tool"
+    else
+        status_warn "Tool: $tool"
+    fi
+done
+
+# ---------- 清屏并打印 Logo ----------
 /bin/busybox echo -e "\033c"
 /bin/busybox echo "       .#####"
 /bin/busybox echo "     ##@@@@@@"
@@ -29,15 +65,14 @@ fi
 /bin/busybox echo "       .#######"
 /bin/busybox echo ""
 /bin/busybox echo "   Welcome to TsukineOS!"
-/bin/busybox echo "   Version: TsukineOS Indev"
+/bin/busybox echo "   Version: TsukineOS Indev 0.1.7"
 /bin/busybox echo "   Kernel: 6.6.0-custom"
 /bin/busybox echo "========================="
 /bin/busybox echo ""
 
+# ---------- 登录 ----------
 while true; do
     /bin/login
-    sleep 1
+    /bin/busybox echo "Login exited. Restarting login..."
+    /bin/busybox sleep 1
 done
-
-# 直接启动 root shell
-exec /bin/busybox sh

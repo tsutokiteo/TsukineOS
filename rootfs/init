@@ -1,40 +1,32 @@
 #!/bin/sh
 
-# 挂载必要的虚拟文件系统
+# 挂载虚拟文件系统
 /bin/busybox mount -t proc none /proc
 /bin/busybox mount -t sysfs none /sys
+/bin/busybox mount -t devtmpfs none /dev
 
-# 清屏
-echo -e "\033c"
-
-# 打印 TsukineOS
-echo "       .#####"
-echo "     ##@@@@@@"
-echo "    #@@@@@@"
-echo "   #@@@@@@"
-echo "   #@@@@@@@"
-echo "    #@@@@@@@"
-echo "     ##@@@@@@@"
-echo "       .#######"
-echo ""
-echo "   Welcome to TsukineOS!"
-echo "   Version: TsukineOS Indev"
-echo "   Kernel: 6.6.0-custom"
-echo "========================="
-echo "" 0.
-
-# 挂载 devtmpfs (如果还没挂载的话)
-mount -t devtmpfs devtmpfs /dev
-
-# 如果 /dev/null 不存在，就手动创建它！
-# c 1 3 代表字符设备，主设备号1，次设备号3，这是 null 设备的绝对标识
+# 创建 /dev/null（如果不存在）
 if [ ! -e /dev/null ]; then
-    mknod /dev/null c 1 3
-    chmod 666 /dev/null
+    /bin/busybox mknod /dev/null c 1 3
+    /bin/busybox chmod 666 /dev/null
 fi
 
-# 现在可以安全地启动网络守护进程了
-/bin/tsukine_net &
+# 打印 Logo
+/bin/busybox echo -e "\033c"
+/bin/busybox echo "       .#####"
+/bin/busybox echo "     ##@@@@@@"
+/bin/busybox echo "    #@@@@@@"
+/bin/busybox echo "   #@@@@@@"
+/bin/busybox echo "   #@@@@@@@"
+/bin/busybox echo "    #@@@@@@@"
+/bin/busybox echo "     ##@@@@@@@"
+/bin/busybox echo "       .#######"
+/bin/busybox echo ""
+/bin/busybox echo "   Welcome to TsukineOS!"
+/bin/busybox echo "   Version: TsukineOS Indev"
+/bin/busybox echo "   Kernel: 6.6.0-custom"
+/bin/busybox echo "========================="
+/bin/busybox echo ""
 
-# 启动交互式命令行
+# 直接启动 root shell（不经过 login）
 exec /bin/busybox sh

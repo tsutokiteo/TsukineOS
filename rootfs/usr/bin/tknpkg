@@ -1,0 +1,107 @@
+#!/bin/sh
+# tknpkg - Tsukine OS 包管理器
+
+DB="/var/lib/tknpkg/db"
+
+usage() {
+    echo "Usage: tknpkg <install|remove|list> [package]"
+    echo "  install <file.tkn>   - 安装一个 .tkn 包"
+    echo "  remove <name>        - 卸载已安装的包"
+    echo "  list                 - 列出所有已安装的包"
+}
+
+add_to_db() {
+    local name=$1
+    local version=$2
+    echo "$name $version" >> "$DB"
+}
+
+remove_from_db() {
+    local name=$1
+    sed -i "/^$name /d" "$DB"
+}
+
+do_install() {
+    local tknfile="$1"
+    if [ ! -f "$tknfile" ]; then
+        echo "Error: $tknfile not found"
+        exit 1
+    fi
+
+    # 用 mkdir + PID 替代 mktemp
+    TMPDIR="/tmp/tknpkg-$$"
+    rm -rf "$TMPDIR"
+    mkdir -p "$TMPDIR"
+
+    tar -xzf "$tknfile" -C "$TMPDIR" 2>/dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error: failed to extract package"
+        rm -rf "$TMPDIR"
+        exit 1
+    fi
+
+    local name=$(grep '^name:' "$TMPDIR/metadata" 2>/dev/null | cut -d' ' -f2)
+    local version=$(grep '^version:' "$TMPDIR/metadata" 2>/dev/null | cut -d' ' -f2)
+
+    if [ -z "$name" ] || [ -z "$version" ]; then
+        echo "Error: invalid metadata in package"
+        rm -rf "$TMPDIR"
+        exit 1
+    fi
+
+    if grep -q "^$name " "$DB" 2>/dev/null; then
+        echo "Error: $name is already installed"
+        rm -rf "$TMPDIR"
+        exit 1
+    fi
+
+    if [ -d "$TMPDIR/rootfs" ]; then
+        cp -a "$TMPDIR/rootfs"/* /
+    fi
+
+    if [ -f "$TMPDIR/post-install.sh" ]; then
+        sh "$TMPDIR/post-install.sh"
+    fi
+
+    add_to_db "$name" "$version"
+    echo "Installed: $name $version"
+    rm -rf "$TMPDIR"
+}
+
+do_remove() {
+    local name="$1"
+    if ! grep -q "^$name " "$DB" 2>/dev/null; then
+        echo "Error: $name is not installed"
+        exit 1
+    fi
+
+    local version=$(grep "^$name " "$DB" | cut -d' ' -f2)
+    remove_from_db "$name"
+    echo "Removed: $name $version"
+}
+
+do_list() {
+    if [ ! -s "$DB" ] 2>/dev/null; then
+        echo "No packages installed."
+        return
+    fi
+    cat "$DB"
+}
+
+case "$1" in
+    install)
+        [ -z "$2" ] && { echo "Error: missing .tkn file"; usage; exit 1; }
+        do_install "$2"
+        ;;
+    remove)
+        [ -z "$2" ] && { echo "Error: missing package name"; usage; exit 1; }
+        do_remove "$2"
+        ;;
+    list)
+        do_list
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac

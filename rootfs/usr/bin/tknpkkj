@@ -1,0 +1,68 @@
+#!/bin/sh
+# tknpkkj - Tsukine OS 打包工具
+
+usage() {
+    echo "Usage: tknpkkj build <package_dir>"
+    echo "  build <dir>  - 从指定目录生成 .tkn 包"
+    echo ""
+    echo "Package directory structure:"
+    echo "  metadata         - 包信息文件"
+    echo "  rootfs/          - 要安装的文件"
+    echo "  post-install.sh  - (可选) 安装后脚本"
+}
+
+do_build() {
+    local pkgdir="$1"
+    if [ ! -d "$pkgdir" ]; then
+        echo "Error: package directory $pkgdir not found"
+        exit 1
+    fi
+
+    local metadata="$pkgdir/metadata"
+    if [ ! -f "$metadata" ]; then
+        echo "Error: metadata file not found in $pkgdir"
+        exit 1
+    fi
+
+    local name=$(grep '^name:' "$metadata" | cut -d' ' -f2)
+    local version=$(grep '^version:' "$metadata" | cut -d' ' -f2)
+    if [ -z "$name" ] || [ -z "$version" ]; then
+        echo "Error: invalid metadata (need name and version)"
+        exit 1
+    fi
+
+    local output="${name}-${version}.tkn"
+    echo "Building $output ..."
+
+    # 创建临时目录
+    TMPDIR=$(mktemp -d)
+
+    # 复制 metadata, rootfs, post-install.sh
+    cp "$metadata" "$TMPDIR/"
+    if [ -d "$pkgdir/rootfs" ]; then
+        cp -a "$pkgdir/rootfs" "$TMPDIR/"
+    fi
+    if [ -f "$pkgdir/post-install.sh" ]; then
+        cp "$pkgdir/post-install.sh" "$TMPDIR/"
+    fi
+
+    # 打包成 tar.gz
+    cd "$TMPDIR"
+    tar -czf "$output" metadata rootfs post-install.sh 2>/dev/null || tar -czf "$output" metadata rootfs
+    mv "$output" "$OLDPWD/"
+    cd "$OLDPWD"
+
+    rm -rf "$TMPDIR"
+    echo "Created: $output"
+}
+
+case "$1" in
+    build)
+        [ -z "$2" ] && { echo "Error: missing package directory"; usage; exit 1; }
+        do_build "$2"
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac

@@ -1,1 +1,3 @@
-pub fn render() { /* TODO */ }
+pub fn render() {
+    // TODO
+}

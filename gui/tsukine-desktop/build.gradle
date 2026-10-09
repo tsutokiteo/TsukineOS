@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+java {
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/central' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+}
+
+def javafxVersion = '21.0.2'
+
+dependencies {
+    implementation 'org.graalvm.js:js:24.2.1'
+    implementation 'org.graalvm.polyglot:polyglot:24.2.1'
+    implementation 'org.graalvm.sdk:graal-sdk:24.2.1'
+
+    implementation "org.openjfx:javafx-base:${javafxVersion}:linux"
+    implementation "org.openjfx:javafx-graphics:${javafxVersion}:linux"
+    implementation "org.openjfx:javafx-controls:${javafxVersion}:linux"
+}
+
+application {
+    mainClass = 'com.tsukine.desktop.Main'
+}
+
+run {
+    doFirst {
+        def javafxMods = files(
+            configurations.runtimeClasspath.files.findAll { 
+                it.name =~ /javafx.*linux/ 
+            }
+        ).asPath
+        
+        jvmArgs = [
+            '--module-path', javafxMods,
+            '--add-modules', 'javafx.controls,javafx.graphics',
+            '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+        ]
+    }
+}

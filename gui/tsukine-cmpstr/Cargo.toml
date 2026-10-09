@@ -1,0 +1,19 @@
+[package]
+name = "tsukine-cmpstr"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+smithay = { version = "0.6", default-features = false, features = [
+    "backend_winit",
+    "wayland_frontend",
+    "wayland-server",
+    "wayland-protocols",
+    "wayland-protocols-wlr",
+    "renderer_gl",
+    "desktop",
+] }
+wayland-server = "0.31"
+wayland-protocols = { version = "0.32", features = ["server", "staging"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }

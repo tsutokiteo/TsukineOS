@@ -1,0 +1,7 @@
+config TSUKINE
+    tristate "TsukineOS ABI compat layer"
+    default y
+    help
+      Provides /dev/tsukine character device for Windows ABI
+      compatibility dispatch. Routes win_ssn through compat_map
+      to native tsukine handlers.

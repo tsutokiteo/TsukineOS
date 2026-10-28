@@ -1,0 +1,501 @@
+#pragma once
+#include <linux/types.h>
+
+/* ============ TsukineOS 原生 syscall 号 ============ */
+#define TSUKI_NR_GUI     550
+#define TSUKI_NR_FS      551
+#define TSUKI_NR_PROC    552
+#define TSUKI_NR_MEM     553
+#define TSUKI_NR_SYNC    554   /* Event / Mutant / Semaphore / Timer / KeyedEvent */
+#define TSUKI_NR_IPC     555   /* Port / ALPC / LPC */
+#define TSUKI_NR_REG     556   /* Registry */
+#define TSUKI_NR_SEC     557   /* Token / Audit / AccessCheck / SigningLevel */
+#define TSUKI_NR_TIME    558   /* Timer / Profile / PerformanceCounter / SystemTime */
+#define TSUKI_NR_PWR     559   /* Power / Shutdown / Hibernate */
+#define TSUKI_NR_DBG     560   /* Debug / Profiling / SystemDebugControl */
+#define TSUKI_NR_WNF     561   /* WNF state notifications */
+#define TSUKI_NR_IO      562   /* IoRing / IoCompletion / Ioctl 扩展 */
+#define TSUKI_NR_JOB     563   /* Job / JobSet / CpuPartition */
+#define TSUKI_NR_ENCL    564   /* Enclave / VSM */
+#define TSUKI_NR_TRANS   565   /* KTM / Txn / ResourceManager / Enlistment */
+#define TSUKI_NR_GDI     566   /* win32k 类: DirectGraphics / DrawText / WindowProc thunk */
+#define TSUKI_NR_COMPAT  567   /* 未分类 / 透传占位 */
+
+/* 兼容层通用 flag */
+#define TSUKI_F_COMPAT       0x01
+#define TSUKI_F_WOW64        0x02   /* 来自 wow64 表（分表 SSN） */
+#define TSUKI_F_THUNK_LOCAL  0x04   /* 纯用户态 thunk，不走内核 */
+
+/* 未实现占位子命令：dispatch 直接返回 -ENOSYS */
+#define TSUKI_SUB_UNIMPLEMENTED  0xFFFF
+
+/* ============ GUI ============ */
+#define TSUKI_GUI_CREATE_WIN   0x1001
+#define TSUKI_GUI_DESTROY_WIN  0x1002
+#define TSUKI_GUI_SHOW_WIN     0x1003
+
+/* ============ FS (File / Volume / Ea / Quota / Directory) ============ */
+#define TSUKI_FS_CREATE          0x2001
+#define TSUKI_FS_CLOSE           0x2002
+#define TSUKI_FS_READ            0x2003
+#define TSUKI_FS_WRITE           0x2004
+#define TSUKI_FS_DELETE          0x2005
+#define TSUKI_FS_OPEN            0x2006
+#define TSUKI_FS_QUERY_INFO      0x2007
+#define TSUKI_FS_SET_INFO        0x2008
+#define TSUKI_FS_QUERY_ATTR      0x2009
+#define TSUKI_FS_QUERY_DIR       0x200A
+#define TSUKI_FS_QUERY_DIR_EX    0x200B
+#define TSUKI_FS_QUERY_FULLATTR  0x200C
+#define TSUKI_FS_QUERY_VOLUME    0x200D
+#define TSUKI_FS_SET_VOLUME      0x200E
+#define TSUKI_FS_FLUSH           0x200F
+#define TSUKI_FS_FLUSH_EX        0x2010
+#define TSUKI_FS_LOCK            0x2011
+#define TSUKI_FS_UNLOCK          0x2012
+#define TSUKI_FS_CANCEL_IO       0x2013
+#define TSUKI_FS_CANCEL_IO_EX    0x2014
+#define TSUKI_FS_IOCTL           0x2015
+#define TSUKI_FS_FSCTL           0x2016
+#define TSUKI_FS_READ_SCATTER    0x2017
+#define TSUKI_FS_WRITE_GATHER    0x2018
+#define TSUKI_FS_COPY_CHUNK      0x2019
+#define TSUKI_FS_EA_QUERY        0x201A
+#define TSUKI_FS_EA_SET          0x201B
+#define TSUKI_FS_QUOTA_QUERY     0x201C
+#define TSUKI_FS_QUOTA_SET       0x201D
+#define TSUKI_FS_NOTIFY_DIR      0x201E
+#define TSUKI_FS_NOTIFY_DIR_EX   0x201F
+#define TSUKI_FS_MAILSLOT        0x2020
+#define TSUKI_FS_NAMED_PIPE      0x2021
+#define TSUKI_FS_PAGING          0x2022
+
+/* ============ PROC / THREAD ============ */
+#define TSUKI_PROC_TERM          0x3001
+#define TSUKI_PROC_CREATE        0x3002
+#define TSUKI_PROC_OPEN          0x3003
+#define TSUKI_PROC_QUERY_INFO    0x3004
+#define TSUKI_PROC_SET_INFO      0x3005
+#define TSUKI_PROC_SUSPEND       0x3006
+#define TSUKI_PROC_RESUME        0x3007
+#define TSUKI_PROC_IS_IN_JOB     0x3008
+#define TSUKI_PROC_ASSIGN_JOB    0x3009
+#define TSUKI_PROC_NEXT          0x300A
+#define TSUKI_PROC_CHANGE_STATE  0x300B
+#define TSUKI_THR_CREATE         0x3010
+#define TSUKI_THR_OPEN           0x3011
+#define TSUKI_THR_QUERY_INFO     0x3012
+#define TSUKI_THR_SET_INFO       0x3013
+#define TSUKI_THR_SUSPEND        0x3014
+#define TSUKI_THR_RESUME         0x3015
+#define TSUKI_THR_TERMINATE      0x3016
+#define TSUKI_THR_ALERT          0x3017
+#define TSUKI_THR_ALERT_BY_ID    0x3018
+#define TSUKI_THR_ALERT_RESUME   0x3019
+#define TSUKI_THR_WAIT_ALERT     0x301A
+#define TSUKI_THR_QUEUE_APC      0x301B
+#define TSUKI_THR_QUEUE_APC_EX   0x301C
+#define TSUKI_THR_CONTEXT_GET    0x301D
+#define TSUKI_THR_CONTEXT_SET    0x301E
+#define TSUKI_THR_TEB            0x301F
+#define TSUKI_THR_YIELD          0x3020
+#define TSUKI_THR_TEST_ALERT     0x3021
+#define TSUKI_THR_REGISTER_TERM  0x3022
+
+/* ============ MEM ============ */
+#define TSUKI_MEM_ALLOC          0x4001
+#define TSUKI_MEM_FREE           0x4002
+#define TSUKI_MEM_PROTECT        0x4003
+#define TSUKI_MEM_QUERY          0x4004
+#define TSUKI_MEM_MAP_SECTION    0x4005
+#define TSUKI_MEM_UNMAP_SECTION  0x4006
+#define TSUKI_MEM_MAP_SECTION_EX 0x4007
+#define TSUKI_MEM_UNMAP_EX       0x4008
+#define TSUKI_MEM_READ           0x4009
+#define TSUKI_MEM_WRITE          0x400A
+#define TSUKI_MEM_READ_EX        0x400B
+#define TSUKI_MEM_WRITE_EX       0x400C
+#define TSUKI_MEM_ALLOC_EX       0x400D
+#define TSUKI_MEM_EXTEND         0x400E
+#define TSUKI_MEM_FLUSH          0x400F
+#define TSUKI_MEM_LOCK           0x4010
+#define TSUKI_MEM_UNLOCK         0x4011
+#define TSUKI_MEM_PHYS_ALLOC     0x4012
+#define TSUKI_MEM_PHYS_FREE      0x4013
+#define TSUKI_MEM_PHYS_MAP       0x4014
+#define TSUKI_MEM_UUID           0x4015
+#define TSUKI_MEM_WRITE_WATCH    0x4016
+#define TSUKI_MEM_RESET_WATCH    0x4017
+#define TSUKI_MEM_GET_NEXT       0x4018
+
+/* ============ SYNC ============ */
+#define TSUKI_SYNC_EVENT_CREATE  0x5001
+#define TSUKI_SYNC_EVENT_OPEN    0x5002
+#define TSUKI_SYNC_EVENT_SET     0x5003
+#define TSUKI_SYNC_EVENT_RESET   0x5004
+#define TSUKI_SYNC_EVENT_PULSE   0x5005
+#define TSUKI_SYNC_EVENT_SET_EX  0x5006
+#define TSUKI_SYNC_EVENT_QUERY   0x5007
+#define TSUKI_SYNC_MUTANT_CREATE 0x5010
+#define TSUKI_SYNC_MUTANT_OPEN   0x5011
+#define TSUKI_SYNC_MUTANT_RELEASE 0x5012
+#define TSUKI_SYNC_MUTANT_QUERY  0x5013
+#define TSUKI_SYNC_SEM_CREATE    0x5020
+#define TSUKI_SYNC_SEM_OPEN      0x5021
+#define TSUKI_SYNC_SEM_RELEASE   0x5022
+#define TSUKI_SYNC_SEM_QUERY     0x5023
+#define TSUKI_SYNC_TIMER_CREATE  0x5030
+#define TSUKI_SYNC_TIMER_OPEN    0x5031
+#define TSUKI_SYNC_TIMER_SET     0x5032
+#define TSUKI_SYNC_TIMER_CANCEL  0x5033
+#define TSUKI_SYNC_TIMER_QUERY   0x5034
+#define TSUKI_SYNC_TIMER_SET_EX  0x5035
+#define TSUKI_SYNC_TIMER2_CREATE 0x5036
+#define TSUKI_SYNC_TIMER2_SET    0x5037
+#define TSUKI_SYNC_KEYED_CREATE  0x5040
+#define TSUKI_SYNC_KEYED_WAIT    0x5041
+#define TSUKI_SYNC_KEYED_RELEASE 0x5042
+#define TSUKI_SYNC_EVTPAIR_CREATE 0x5043
+#define TSUKI_SYNC_EVTPAIR_OPEN  0x5044
+#define TSUKI_SYNC_IRTIMER       0x5045
+
+/* ============ IPC (Port / ALPC / LPC) ============ */
+#define TSUKI_IPC_PORT_CREATE    0x6001
+#define TSUKI_IPC_PORT_OPEN      0x6002
+#define TSUKI_IPC_PORT_CONNECT   0x6003
+#define TSUKI_IPC_PORT_SECURE    0x6004
+#define TSUKI_IPC_PORT_WAITABLE  0x6005
+#define TSUKI_IPC_PORT_COMPLETE  0x6006
+#define TSUKI_IPC_REQUEST       0x6007
+#define TSUKI_IPC_REPLY         0x6008
+#define TSUKI_IPC_REPLY_WAIT    0x6009
+#define TSUKI_IPC_REPLY_EX      0x600A
+#define TSUKI_IPC_REQUEST_WAIT  0x600B
+#define TSUKI_IPC_LISTEN        0x600C
+#define TSUKI_IPC_ACCEPT        0x600D
+#define TSUKI_IPC_IMPERSONATE   0x600E
+#define TSUKI_IPC_REVERT        0x600F
+#define TSUKI_IPC_CLOSE_PORT    0x6010
+#define TSUKI_IPC_ALPC_CREATE   0x6011
+#define TSUKI_IPC_ALPC_CONNECT  0x6012
+#define TSUKI_IPC_ALPC_CONNECT_EX 0x6013
+#define TSUKI_IPC_ALPC_ACCEPT   0x6014
+#define TSUKI_IPC_ALPC_SENDWAIT 0x6015
+#define TSUKI_IPC_ALPC_CANCEL   0x6016
+#define TSUKI_IPC_ALPC_DISCONNECT 0x6017
+#define TSUKI_IPC_ALPC_QUERY    0x6018
+#define TSUKI_IPC_ALPC_SET_INFO 0x6019
+#define TSUKI_IPC_ALPC_SECTION  0x601A
+#define TSUKI_IPC_ALPC_VIEW     0x601B
+#define TSUKI_IPC_ALPC_CONTEXT  0x601C
+#define TSUKI_IPC_ALPC_REVOKE   0x601D
+#define TSUKI_IPC_WORKER_CREATE 0x601E
+#define TSUKI_IPC_WORKER_READY  0x601F
+#define TSUKI_IPC_WORKER_RELEASE 0x6020
+#define TSUKI_IPC_WORKER_SHUTDOWN 0x6021
+#define TSUKI_IPC_WORKER_WAIT   0x6022
+#define TSUKI_IPC_WAIT_COMPLETION 0x6023
+#define TSUKI_IPC_CANCEL_COMPLETION 0x6024
+
+/* ============ REG ============ */
+#define TSUKI_REG_OPEN          0x7001
+#define TSUKI_REG_CREATE        0x7002
+#define TSUKI_REG_CREATE_TRANS  0x7003
+#define TSUKI_REG_DELETE        0x7004
+#define TSUKI_REG_CLOSE         0x7005
+#define TSUKI_REG_QUERY_KEY     0x7006
+#define TSUKI_REG_ENUM_KEY      0x7007
+#define TSUKI_REG_QUERY_VALUE   0x7008
+#define TSUKI_REG_ENUM_VALUE    0x7009
+#define TSUKI_REG_SET_VALUE     0x700A
+#define TSUKI_REG_DELETE_VALUE  0x700B
+#define TSUKI_REG_RENAME_KEY    0x700C
+#define TSUKI_REG_COMPACT       0x700D
+#define TSUKI_REG_COMPRESS      0x700E
+#define TSUKI_REG_FLUSH         0x700F
+#define TSUKI_REG_SAVE          0x7010
+#define TSUKI_REG_SAVE_EX       0x7011
+#define TSUKI_REG_SAVE_MERGED   0x7012
+#define TSUKI_REG_RESTORE       0x7013
+#define TSUKI_REG_REPLACE       0x7014
+#define TSUKI_REG_LOAD_KEY      0x7015
+#define TSUKI_REG_LOAD_KEY_EX   0x7016
+#define TSUKI_REG_UNLOAD_KEY    0x7017
+#define TSUKI_REG_LOCK          0x7018
+#define TSUKI_REG_FREEZE        0x7019
+#define TSUKI_REG_THAW          0x701A
+#define TSUKI_REG_TRANSACT      0x701B
+#define TSUKI_REG_ROLLBACK      0x701C
+#define TSUKI_REG_COMMIT        0x701D
+#define TSUKI_REG_NOTIFY        0x701E
+#define TSUKI_REG_NOTIFY_MULTI  0x701F
+
+/* ============ SEC (Token / Audit / Signing / AccessCheck) ============ */
+#define TSUKI_SEC_TOKEN_CREATE  0x8001
+#define TSUKI_SEC_TOKEN_OPEN    0x8002
+#define TSUKI_SEC_TOKEN_DUP     0x8003
+#define TSUKI_SEC_TOKEN_ADJUST  0x8004
+#define TSUKI_SEC_TOKEN_ADJ_GROUPS 0x8005
+#define TSUKI_SEC_TOKEN_ADJ_CLAIMS 0x8006
+#define TSUKI_SEC_TOKEN_FILTER  0x8007
+#define TSUKI_SEC_TOKEN_FILTER_EX 0x8008
+#define TSUKI_SEC_TOKEN_LOWBOX  0x8009
+#define TSUKI_SEC_TOKEN_IMPERSONATE 0x800A
+#define TSUKI_SEC_TOKEN_ANON    0x800B
+#define TSUKI_SEC_TOKEN_QUERY   0x800C
+#define TSUKI_SEC_TOKEN_SET_INFO 0x800D
+#define TSUKI_SEC_TOKEN_SEC_ATTR 0x800E
+#define TSUKI_SEC_ACCESS_CHECK  0x8010
+#define TSUKI_SEC_ACCESS_AUDIT  0x8011
+#define TSUKI_SEC_ACCESS_BY_TYPE 0x8012
+#define TSUKI_SEC_AUDIT_ALARM   0x8013
+#define TSUKI_SEC_AUDIT_CLOSE   0x8014
+#define TSUKI_SEC_AUDIT_OPEN    0x8015
+#define TSUKI_SEC_PRIV_CHECK    0x8016
+#define TSUKI_SEC_PRIV_OBJECT_AUDIT 0x8017
+#define TSUKI_SEC_SIGNING_GET   0x8018
+#define TSUKI_SEC_SIGNING_SET   0x8019
+#define TSUKI_SEC_SIGNING_SET2  0x801A
+#define TSUKI_SEC_COMPARE_LEVELS 0x801B
+#define TSUKI_SEC_COMPARE_TOKENS 0x801C
+
+/* ============ TIME / PROFILE ============ */
+#define TSUKI_TIME_QUERY        0x9001
+#define TSUKI_TIME_SET          0x9002
+#define TSUKI_TIME_RESOLUTION   0x9003
+#define TSUKI_TIME_SET_RES      0x9004
+#define TSUKI_TIME_TIMER_RES    0x9005
+#define TSUKI_TIME_PERF_COUNTER 0x9006
+#define TSUKI_TIME_AUX_FREQ     0x9007
+#define TSUKI_TIME_AUX_CONVERT  0x9008
+#define TSUKI_TIME_PROFILE_START 0x9009
+#define TSUKI_TIME_PROFILE_STOP 0x900A
+#define TSUKI_TIME_PROFILE_CREATE 0x900B
+#define TSUKI_TIME_PROFILE_EX   0x900C
+#define TSUKI_TIME_INTERVAL     0x900D
+#define TSUKI_TIME_SET_INTERVAL 0x900E
+#define TSUKI_TIME_DELAY        0x900F
+#define TSUKI_TIME_YIELD        0x9010
+#define TSUKI_TIME_CURR_CPU     0x9011
+#define TSUKI_TIME_CURR_CPU_EX  0x9012
+
+/* ============ POWER ============ */
+#define TSUKI_PWR_QUERY         0xA001
+#define TSUKI_PWR_SET           0xA002
+#define TSUKI_PWR_ACTION        0xA003
+#define TSUKI_PWR_SHUTDOWN      0xA004
+#define TSUKI_PWR_HIBERNATE     0xA005
+#define TSUKI_PWR_DEVICE_STATE  0xA006
+#define TSUKI_PWR_SYSTEM_RESUME 0xA007
+#define TSUKI_PWR_LAST_KNOWN    0xA008
+#define TSUKI_PWR_LAST_KNOWN_EN 0xA009
+#define TSUKI_PWR_DISPLAY       0xA00A
+
+/* ============ DEBUG ============ */
+#define TSUKI_DBG_ACTIVE        0xB001
+#define TSUKI_DBG_CONTINUE      0xB002
+#define TSUKI_DBG_BREAK         0xB003
+#define TSUKI_DBG_READ          0xB004
+#define TSUKI_DBG_WRITE         0xB005
+#define TSUKI_DBG_GET_CONTEXT   0xB006
+#define TSUKI_DBG_SET_CONTEXT   0xB007
+#define TSUKI_DBG_WAIT_EVENT    0xB008
+#define TSUKI_DBG_SYSTEM_CTRL   0xB009
+#define TSUKI_DBG_FILTER_GET    0xB00A
+#define TSUKI_DBG_FILTER_SET    0xB00B
+#define TSUKI_DBG_TRACE_CTRL    0xB00C
+#define TSUKI_DBG_TRACE_EVENT   0xB00D
+#define TSUKI_DBG_HARD_ERROR    0xB00E
+
+/* ============ WNF ============ */
+#define TSUKI_WNF_CREATE       0xC001
+#define TSUKI_WNF_DELETE_NAME  0xC002
+#define TSUKI_WNF_DELETE_DATA  0xC003
+#define TSUKI_WNF_QUERY_DATA   0xC004
+#define TSUKI_WNF_QUERY_NAME   0xC005
+#define TSUKI_WNF_UPDATE       0xC006
+#define TSUKI_WNF_SUBSCRIBE    0xC007
+#define TSUKI_WNF_UNSUBSCRIBE  0xC008
+#define TSUKI_WNF_GET_SUB      0xC009
+#define TSUKI_WNF_NOTIFY_EVENT 0xC00A
+
+/* ============ IO (IoRing / IoCompletion) ============ */
+#define TSUKI_IO_RING_CREATE   0xD001
+#define TSUKI_IO_RING_SUBMIT   0xD002
+#define TSUKI_IO_RING_SET_INFO 0xD003
+#define TSUKI_IO_RING_CAPS     0xD004
+#define TSUKI_IO_COMP_CREATE   0xD005
+#define TSUKI_IO_COMP_OPEN     0xD006
+#define TSUKI_IO_COMP_QUERY    0xD007
+#define TSUKI_IO_COMP_REMOVE   0xD008
+#define TSUKI_IO_COMP_REMOVE_EX 0xD009
+#define TSUKI_IO_COMP_SET      0xD00A
+#define TSUKI_IO_COMP_SET_EX   0xD00B
+
+/* ============ JOB / PARTITION ============ */
+#define TSUKI_JOB_CREATE       0xE001
+#define TSUKI_JOB_OPEN         0xE002
+#define TSUKI_JOB_SET_INFO     0xE003
+#define TSUKI_JOB_QUERY_INFO   0xE004
+#define TSUKI_JOB_ASSIGN       0xE005
+#define TSUKI_JOB_IS_IN        0xE006
+#define TSUKI_JOB_TERM         0xE007
+#define TSUKI_JOB_SET_CREATE   0xE008
+#define TSUKI_JOB_CPU_PART_OPEN 0xE009
+#define TSUKI_JOB_CPU_PART_CREATE 0xE00A
+#define TSUKI_JOB_CPU_PART_SET 0xE00B
+#define TSUKI_JOB_CPU_PART_QUERY 0xE00C
+#define TSUKI_JOB_PART_OPEN    0xE00D
+#define TSUKI_JOB_PART_CREATE  0xE00E
+#define TSUKI_JOB_PART_MANAGE  0xE00F
+#define TSUKI_JOB_PART_REPLACE 0xE010
+
+/* ============ ENCLAVE / VSM ============ */
+#define TSUKI_ENCL_CREATE      0xF001
+#define TSUKI_ENCL_INIT        0xF002
+#define TSUKI_ENCL_LOAD        0xF003
+#define TSUKI_ENCL_TERM        0xF004
+#define TSUKI_ENCL_CALL        0xF005
+#define TSUKI_ENCL_DATA        0xF006
+#define TSUKI_ENCL_LOWBOX      0xF007
+#define TSUKI_ENCL_SIGNING     0xF008
+
+/* ============ TRANSACTION (KTM) ============ */
+#define TSUKI_TXN_CREATE_MGR   0x10001
+#define TSUKI_TXN_OPEN_MGR     0x10002
+#define TSUKI_TXN_CREATE       0x10003
+#define TSUKI_TXN_OPEN         0x10004
+#define TSUKI_TXN_COMMIT       0x10005
+#define TSUKI_TXN_ROLLBACK     0x10006
+#define TSUKI_TXN_ROLLFORWARD  0x10007
+#define TSUKI_TXN_SET_INFO     0x10008
+#define TSUKI_TXN_QUERY_INFO   0x10009
+#define TSUKI_TXN_ENLIST_CREATE 0x1000A
+#define TSUKI_TXN_ENLIST_OPEN  0x1000B
+#define TSUKI_TXN_ENLIST_COMMIT 0x1000C
+#define TSUKI_TXN_ENLIST_ROLLBACK 0x1000D
+#define TSUKI_TXN_ENLIST_PREP  0x1000E
+#define TSUKI_TXN_ENLIST_READY 0x1000F
+#define TSUKI_TXN_ENLIST_RECOVER 0x10010
+#define TSUKI_TXN_ENLIST_READONLY 0x10011
+#define TSUKI_TXN_ENLIST_SINGLE 0x10012
+#define TSUKI_TXN_RM_CREATE    0x10013
+#define TSUKI_TXN_RM_OPEN      0x10014
+#define TSUKI_TXN_RM_RECOVER   0x10015
+#define TSUKI_TXN_RM_SET_INFO  0x10016
+#define TSUKI_TXN_REG_TRANS_CREATE 0x10017
+#define TSUKI_TXN_REG_TRANS_COMMIT 0x10018
+#define TSUKI_TXN_REG_TRANS_ROLLBACK 0x10019
+#define TSUKI_TXN_REG_TRANS_COMPACT 0x1001A
+
+/* ============ GDI / win32k thunk ============ */
+#define TSUKI_GDI_DEF_WNDPROC_A 0x11001
+#define TSUKI_GDI_DEF_WNDPROC_W 0x11002
+#define TSUKI_GDI_DLG_WNDPROC_A 0x11003
+#define TSUKI_GDI_DLG_WNDPROC_W 0x11004
+#define TSUKI_GDI_DIRECT_CALL  0x11005
+#define TSUKI_GDI_DRAW_TEXT     0x11006
+#define TSUKI_GDI_DISPLAY_STR   0x11007
+
+/* ============ win32k syscall 别名（用户态） ============ */
+#define WIN32K_NOP              0x0000
+#define WIN32K_MAX_CALL         0x0FFF
+
+/* 内核侧 dispatch 辅助宏 */
+#define TSUKI_SSN_TABLE(ssn)   ((uint32_t)(ssn) >> 16)
+#define TSUKI_SSN_SLOT(ssn)    ((uint16_t)(ssn))
+
+/* === compat layer stub macros (auto-generated names, not yet implemented) === */
+#ifndef TSUKI_IPC_PORT_ACCEPT
+#define TSUKI_IPC_PORT_ACCEPT        TSUKI_IPC_ALPC_ACCEPT
+#endif
+#ifndef TSUKI_IPC_ALPC_OPEN
+#define TSUKI_IPC_ALPC_OPEN          TSUKI_IPC_ALPC_VIEW
+#endif
+#ifndef TSUKI_IO_COMP_CANCEL
+#define TSUKI_IO_COMP_CANCEL         TSUKI_IO_COMP_REMOVE
+#endif
+#ifndef TSUKI_MEM_PAGING
+#define TSUKI_MEM_PAGING             TSUKI_MEM_ALLOC
+#endif
+#ifndef TSUKI_DBG_PROFILE_CREATE
+#define TSUKI_DBG_PROFILE_CREATE     TSUKI_TIME_PROFILE_CREATE
+#endif
+#ifndef TSUKI_DBG_PROFILE_EX
+#define TSUKI_DBG_PROFILE_EX         TSUKI_TIME_PROFILE_EX
+#endif
+#ifndef TSUKI_IPC_PORT_CLOSE
+#define TSUKI_IPC_PORT_CLOSE         TSUKI_IPC_PORT_OPEN
+#endif
+#ifndef TSUKI_DBG_FLUSH
+#define TSUKI_DBG_FLUSH              TSUKI_REG_FLUSH
+#endif
+#ifndef TSUKI_REG_INIT
+#define TSUKI_REG_INIT               TSUKI_REG_CREATE
+#endif
+#ifndef TSUKI_IPC_PORT_WAIT
+#define TSUKI_IPC_PORT_WAIT          TSUKI_IPC_PORT_OPEN
+#endif
+#ifndef TSUKI_TXN_REG_TRANS_OPEN
+#define TSUKI_TXN_REG_TRANS_OPEN     TSUKI_TXN_REG_TRANS_CREATE
+#endif
+#ifndef TSUKI_IPC_PORT_QUERY
+#define TSUKI_IPC_PORT_QUERY         TSUKI_IPC_PORT_OPEN
+#endif
+#ifndef TSUKI_TXN_ENLIST_QUERY
+#define TSUKI_TXN_ENLIST_QUERY       TSUKI_TXN_ENLIST_CREATE
+#endif
+#ifndef TSUKI_TXN_RM_QUERY
+#define TSUKI_TXN_RM_QUERY           TSUKI_TXN_RM_OPEN
+#endif
+#ifndef TSUKI_IPC_WORKER_QUERY
+#define TSUKI_IPC_WORKER_QUERY       TSUKI_IPC_WORKER_CREATE
+#endif
+#ifndef TSUKI_SEC_SECURITY_QUERY
+#define TSUKI_SEC_SECURITY_QUERY     TSUKI_SEC_TOKEN_QUERY
+#endif
+#ifndef TSUKI_TXN_RECOVER
+#define TSUKI_TXN_RECOVER            TSUKI_TXN_RM_RECOVER
+#endif
+#ifndef TSUKI_DBG_REMOVE
+#define TSUKI_DBG_REMOVE             TSUKI_DBG_ACTIVE
+#endif
+#ifndef TSUKI_TXN_RENAME
+#define TSUKI_TXN_RENAME             TSUKI_TXN_CREATE_MGR
+#endif
+#ifndef TSUKI_SEC_REVERT
+#define TSUKI_SEC_REVERT             TSUKI_SEC_TOKEN_FILTER
+#endif
+#ifndef TSUKI_SYNC_EVTPAIR_SET
+#define TSUKI_SYNC_EVTPAIR_SET       TSUKI_SYNC_EVTPAIR_OPEN
+#endif
+#ifndef TSUKI_DBG_SET
+#define TSUKI_DBG_SET                TSUKI_DBG_SET_CONTEXT
+#endif
+#ifndef TSUKI_TXN_ENLIST_SET
+#define TSUKI_TXN_ENLIST_SET         TSUKI_TXN_ENLIST_CREATE
+#endif
+#ifndef TSUKI_REG_SET_INFO
+#define TSUKI_REG_SET_INFO           TSUKI_REG_CREATE
+#endif
+#ifndef TSUKI_IPC_PORT_SET
+#define TSUKI_IPC_PORT_SET           TSUKI_IPC_PORT_OPEN
+#endif
+#ifndef TSUKI_MEM_SET_INFO
+#define TSUKI_MEM_SET_INFO           TSUKI_MEM_ALLOC_EX
+#endif
+#ifndef TSUKI_IPC_WORKER_SET
+#define TSUKI_IPC_WORKER_SET         TSUKI_IPC_WORKER_CREATE
+#endif
+#ifndef TSUKI_SEC_SET
+#define TSUKI_SEC_SET                TSUKI_SEC_TOKEN_CREATE
+#endif
+#ifndef TSUKI_DBG_PROFILE_START
+#define TSUKI_DBG_PROFILE_START      TSUKI_TIME_PROFILE_START
+#endif
+#ifndef TSUKI_DBG_PROFILE_STOP
+#define TSUKI_DBG_PROFILE_STOP       TSUKI_TIME_PROFILE_STOP
+#endif
+#ifndef TSUKI_SYNC_EVTPAIR_WAIT
+#define TSUKI_SYNC_EVTPAIR_WAIT      TSUKI_SYNC_EVTPAIR_OPEN
+#endif

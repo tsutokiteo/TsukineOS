@@ -1,0 +1,1 @@
+obj-$(CONFIG_TSUKINE) += tsukine_dev.o

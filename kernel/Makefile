@@ -158,3 +158,6 @@ $(obj)/kheaders_data.tar.xz: FORCE
 	$(call cmd,genikh)
 
 clean-files := kheaders_data.tar.xz kheaders.md5
+
+# TsukineOS ABI compat layer
+obj-$(CONFIG_TSUKINE) += tsukine/

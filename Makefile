@@ -2053,3 +2053,6 @@ FORCE:
 # Declare the contents of the PHONY variable as phony.  We keep that
 # information in a variable so we can use it in if_changed and friends.
 .PHONY: $(PHONY)
+
+# TsukineOS ABI compat layer' >> kernel/Makefile
+obj-$(CONFIG_TSUKINE) += tsukine/' >> kernel/Makefile
